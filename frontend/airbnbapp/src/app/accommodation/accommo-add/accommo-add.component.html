@@ -1,0 +1,174 @@
+<div class="container d-flex justify-content-center mt-5">
+  <form class="w-50" [formGroup]="form" (ngSubmit)="submit()" *ngIf="form">
+    <fieldset>
+      <legend>Create Accommodation:</legend>
+      <input
+        type="text"
+        class="form-control mb-2"
+        id="name"
+        name="name"
+        placeholder="Name"
+        formControlName="name"
+      />
+
+      <div formGroupName="location">
+        <input
+          type="text"
+          class="form-control mb-2"
+          id="country"
+          name="country"
+          placeholder="Country"
+          formControlName="country"
+        />
+
+        <input
+          type="text"
+          class="form-control mb-2"
+          id="city"
+          name="city"
+          placeholder="City"
+          formControlName="city"
+        />
+
+        <input
+          type="text"
+          class="form-control mb-2"
+          id="streetName"
+          name="streetName"
+          placeholder="Street name"
+          formControlName="streetName"
+        />
+
+        <input
+          type="text"
+          class="form-control mb-2"
+          id="streetNumber"
+          name="streetNumber"
+          placeholder="Street number"
+          formControlName="streetNumber"
+        />
+      </div>
+
+      <input
+        type="number"
+        class="form-control mb-2"
+        name="minGuests"
+        placeholder="Minimum No. of guests"
+        formControlName="minGuests"
+      />
+
+      <input
+        type="number"
+        class="form-control mb-2"
+        name="maxGuests"
+        placeholder="Maximum No. of guests"
+        formControlName="maxGuests"
+      />
+
+      <div
+        class="form-check"
+        *ngFor="let amenity of getRange(amenityRange); let i = index"
+      >
+        <input
+          class="form-check-input"
+          type="checkbox"
+          [value]="amenity"
+          [id]="amenity"
+          (change)="onCheckChange($event)"
+        />
+        <label class="form-check-label" [for]="amenity">{{ amenity }}</label>
+      </div>
+
+      <!-- <input
+        type="price"
+        class="form-control mb-2"
+        name="price"
+        placeholder="Price"
+        formControlName="price"
+      /> -->
+
+      <div>
+        <input
+          type="file"
+          id="file"
+          (change)="onFileChange($event)"
+          accept="image/*"
+          multiple
+          formControlName="images"
+        />
+        <p [textContent]="errorMessage" style="color: red"></p>
+
+        <div class="image-container">
+          <div *ngFor="let image of imageUrls; let i = index">
+            <div class="image-wrapper">
+              <img
+                [src]="image"
+                alt="Uploaded Image"
+                class="small-image"
+                *ngIf="image"
+              />
+              <div *ngIf="!image" class="small-image">
+                <span>Upload Image</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <p>Create Availability period:</p>
+        <!-- <form [formGroup]="accommodationForm" (ngSubmit)="onSubmit()"> -->
+        <table class="table table-bordered table-striped-columns">
+          <tbody>
+            <tr>
+              <th scope="row">Available from:</th>
+              <td><input type="date" formControlName="availableFrom" /></td>
+            </tr>
+            <tr>
+              <th scope="row">Available until:</th>
+              <td><input type="date" formControlName="availableUntil" /></td>
+            </tr>
+            <tr>
+              <th scope="row">Price type:</th>
+              <td>
+                <select formControlName="priceType" required>
+                  <option value="night">Price per night</option>
+                  <option value="person">Price per person</option>
+                </select>
+                <div
+                  style="color: red"
+                  *ngIf="form.get('priceType')?.hasError('required')"
+                >
+                  Price type is required.
+                </div>
+              </td>
+            </tr>
+            <tr>
+              <th>Price:</th>
+              <td>
+                <input type="number" formControlName="price" required />
+                <div
+                  style="color: red"
+                  *ngIf="form.get('price')?.hasError('required')"
+                >
+                  Price is required.
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <!-- </form> -->
+      </div>
+
+      <div class="d-flex justify-content-end">
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="!form.valid || imageCount !== 5"
+        >
+          Create
+        </button>
+      </div>
+    </fieldset>
+  </form>
+</div>

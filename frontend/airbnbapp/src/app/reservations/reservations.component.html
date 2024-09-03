@@ -1,0 +1,29 @@
+<div class="container mt-4">
+  <h2>User Reservations</h2>
+  <table class="table">
+    <caption>
+      User Reservations
+    </caption>
+    <thead>
+      <tr>
+        <th>Accommodation ID</th>
+        <th>Price</th>
+        <th>Number of People</th>
+        <th>Start Date</th>
+        <th>End Date</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let reservation of userReservations">
+        <td>{{ reservation.accoId }}</td>
+        <td>{{ reservation.price }}</td>
+        <td>{{ reservation.numberOfPeople }}</td>
+        <td>{{ reservation.startDate | date }}</td>
+        <td>{{ reservation.endDate | date }}</td>
+        <button class="btn btn-danger" (click)="undoReservation(reservation)">
+          Cancel reservation
+        </button>
+      </tr>
+    </tbody>
+  </table>
+</div>

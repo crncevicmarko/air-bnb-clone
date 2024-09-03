@@ -1,0 +1,377 @@
+version: "3.8"
+
+services:
+  auth-service:
+    image: auth-service
+    hostname: auth-service
+    build:
+      context: .
+      dockerfile: ./auth-service/Dockerfile
+    restart: always
+    environment:
+      PORT: ${AUTH_SERVICE_PORT}
+      MONGO_DB_URI: ${MONGO_DB_URI}
+      PROF_SERVICE_HOST: ${PROF_SERVICE_HOST}
+      PROF_SERVICE_PORT: ${PROF_SERVICE_PORT}
+      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
+      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
+      ACCOMMODATION_SERVICE_HOST: ${ACCOMMODATIONS_SERVICE_HOST}
+      ACCOMMODATION_SERVICE_PORT: ${ACCOMMODATIONS_SERVICE_PORT}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    volumes:
+      - auth_log:/auth
+    networks:
+      - network
+    # volumes:
+    #   - ./auth-service/cert/auth-server.crt:/cert/auth-server.crt
+    #   - ./auth-service/cert/auth-server.key:/cert/auth-server.key
+
+  prof-service:
+    image: prof-service
+    hostname: prof-service
+    build:
+      context: .
+      dockerfile: ./prof-service/Dockerfile
+    restart: always
+    environment:
+      PORT: ${PROF_SERVICE_PORT}
+      PROF_DB: ${PROF_DB}
+      PROF_DB_PORT: ${PROF_DB_PORT}
+      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
+      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
+      AUTH_SERVICE_HOST: ${AUTH_SERVICE_HOST}
+      AUTH_SERVICE_PORT: ${AUTH_SERVICE_PORT}
+    depends_on:
+      consul:
+        condition: service_healthy
+    volumes:
+      - prof_log:/prof
+    networks:
+      - network
+    # volumes:
+    #   - ./prof-service/cert/prof-server.crt:/cert/prof-server.crt
+    #   - ./prof-service/cert/prof-server.key:/cert/prof-server.key
+
+  accommodation-service:
+    image: accommodation-service
+    hostname: ${ACCOMMODATIONS_SERVICE_HOST}
+    build:
+      context: .
+      dockerfile: ./accommodation-service/Dockerfile
+    restart: always
+    environment:
+      HOST: ${ACCOMMODATIONS_SERVICE_HOST}
+      PORT: ${ACCOMMODATIONS_SERVICE_PORT}
+      MONGO_DB_URI: ${MONGO_DB_URI}
+      RESERVATION_SERVICE_HOST: ${RESERVATION_SERVICE_HOST}
+      RESERVATION_SERVICE_PORT: ${RESERVATION_SERVICE_PORT}
+      HDFS_URI: ${HDFS_URI}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+    depends_on:
+      mongo:
+        condition: service_healthy
+      namenode:
+        condition: service_healthy
+      datanode1:
+        condition: service_healthy
+      datanode2:
+        condition: service_healthy
+      datanode3:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    volumes:
+      - acco_log:/acco
+    networks:
+      - network
+
+  notification-service:
+    build:
+      context: .
+      dockerfile: ./notification-service/Dockerfile
+    restart: always
+    image: notification-service
+    hostname: notification-service
+    environment:
+      HOST: ${NOTIFICATION_SERVICE_HOST}
+      PORT: ${NOTIFICATION_SERVICE_PORT}
+      MONGO_DB_URI: ${MONGO_DB_URI}
+    depends_on:
+      mongo:
+        condition: service_healthy
+    networks:
+      - network
+
+  reservation-service:
+    build:
+      context: .
+      dockerfile: ./Reservation-service/Dockerfile
+    restart: always
+    # container_name: "reservation-service"
+    image: reservation-service
+    hostname: reservation-service
+    ports:
+      - 8000:8000
+    environment:
+      # - PORT=8000
+      - CASS_DB=cassandra:9042
+    depends_on:
+      cassandra:
+        condition: service_healthy
+    volumes:
+      - res_log:/res
+    networks:
+      - network
+
+  recommendation-service:
+    build:
+      context: .
+      dockerfile: ./recommendation-service/Dockerfile
+    restart: always
+    hostname: "recommendation-service"
+    #Mapping ports
+#    ports:
+      # <port_on_local>:<port_in_machine>
+#      - 8000:8000
+    #Will be accessible through os.Getenv("PORT")
+    environment:
+      - PORT=8000
+      # NoSQL: environment variable holding connection URI for Neo4J database
+      # Local DB instance
+      - NEO4J_DB=bolt://neo4j:7687
+      - NEO4J_USERNAME=neo4j
+      - NEO4J_PASS=passwordds
+    depends_on:
+      neo4j:
+        condition: service_healthy
+    networks:
+      - network
+
+  api_gateway:
+    build:
+      context: ./api-gateway/
+      dockerfile: Dockerfile
+    container_name: api-gateway
+    restart: on-failure
+    ports:
+      - ${GATEWAY_PORT}:${GATEWAY_PORT}
+    depends_on:
+      - auth-service
+      - accommodation-service
+      - prof-service
+      - reservation-service
+      - recommendation-service
+    networks:
+      - network
+
+  #  nats:
+  #    image: nats
+  #    container_name: nats
+  #    ports:
+  #      - "4222:4222"
+  #    restart: on-failure
+  #    networks:
+  #      - network
+
+  # NOSQL: MongoDB
+  mongo:
+    image: mongo
+    hostname: mongo
+    restart: on-failure
+    ports:
+      - "27017:27017"
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: pass
+      MONGO_INITDB_DATABASE: mongoDemo
+    # Docker healtcheck - checks if database is "alive"
+    healthcheck:
+      test: echo 'db.runCommand("ping").ok'
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    volumes:
+      - mongo_store:/data/db
+    networks:
+      - network
+
+  # NoSQL: MognoExpress
+  mongo-express:
+    image: mongo-express
+    restart: always
+    environment:
+      # hostname of mongo databse
+      - ME_CONFIG_MONGODB_SERVER=mongo
+      - ME_CONFIG_MONGODB_ADMINUSERNAME=root
+      - ME_CONFIG_MONGODB_ADMINPASSWORD=pass
+      - ME_CONFIG_BASICAUTH_USERNAME=admin
+      - ME_CONFIG_BASICAUTH_PASSWORD=admin
+    depends_on:
+      - mongo
+    ports:
+      - "8081:8081"
+    volumes:
+      - mongo_express_data:/data/db
+    networks:
+      - network
+
+    # NoSQL: CassandraDB
+  cassandra:
+    image: cassandra
+    restart: always
+    ports:
+      - "9042:9042"
+    healthcheck:
+      test: ["CMD-SHELL", "cqlsh -e 'describe cluster'"]
+      interval: 15s
+      timeout: 5s
+      retries: 15
+    volumes:
+      - cass_store:/var/lib/cassandra/data
+    # environment:
+    #    - CASSANDRA_RPC_ADDRESS=cassandra
+    #    - CASSANDRA_BROADCAST_ADDRESS=cassandra
+    #    - CASSANDRA_LISTEN_ADDRESS=cassandra
+    networks:
+      - network
+
+  #   NoSQL: Consul
+  consul:
+    image: hashicorp/consul:latest
+    ports:
+      - "8500:8500"
+      - "8600:8600/tcp"
+      - "8600:8600/udp"
+    healthcheck:
+      test: ["CMD", "consul", "members"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    command: "agent -server -ui -node=server-1 -bootstrap-expect=1 -client=0.0.0.0"
+    volumes:
+      # NoSQL
+      # <path_to_where_to_store_data_on_host_machine>:<database_specific_data_location>
+      - ./cosnul_store:/consul/data
+    networks:
+      - network
+
+    # NoSQL: Redis
+  redis:
+    image: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 10s
+      retries: 10
+    command: "redis-server --save 20 1 --loglevel warning"
+    volumes:
+      # <docker_volume_name>:<database_specific_data_location>
+      - redis_data:/data
+    networks:
+      - network
+
+  namenode:
+    image: bde2020/hadoop-namenode:2.0.0-hadoop3.2.1-java8
+    container_name: namenode
+    ports:
+      - 9870:9870
+      - 9000:9000
+    volumes:
+      - hadoop_namenode:/hadoop/dfs/name
+    environment:
+      - CLUSTER_NAME=test
+    env_file:
+      - ./.env
+    networks:
+      - network
+
+  datanode1:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode1
+    volumes:
+      - hadoop_datanode1:/hadoop/dfs/data
+      - ./hdfs-site.xml:/usr/local/hadoop/etc/hadoop/hdfs-site.xml
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870"
+    env_file:
+      - ./.env
+    networks:
+      - network
+
+  datanode2:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode2
+    volumes:
+      - hadoop_datanode2:/hadoop/dfs/data
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870"
+    env_file:
+      - ./.env
+    networks:
+      - network
+
+  datanode3:
+    image: bde2020/hadoop-datanode:2.0.0-hadoop3.2.1-java8
+    container_name: datanode3
+    volumes:
+      - hadoop_datanode3:/hadoop/dfs/data
+    environment:
+      SERVICE_PRECONDITION: "namenode:9870"
+    env_file:
+      - ./.env
+    networks:
+      - network
+
+  neo4j:
+    image: neo4j
+    restart: always
+    ports:
+      # bolt
+      - "7687:7687"
+      # http
+      - "7474:7474"
+      # https
+      - "7473:7473"
+    # Docker healtcheck - checks if database is "alive"
+    healthcheck:
+      # test: [ "CMD-SHELL", "echo RETURN 1 | cypher-shell -a <NEO4J_dbms_connector_bolt_listen__address> -u <user defined username> -p <user defined password> || exit 1" ]
+      test:
+        [
+          "CMD-SHELL",
+          "echo RETURN 1 | cypher-shell -a bolt://neo4j:7687 -u neo4j -p passwordds || exit 1",
+        ]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+    environment:
+      - NEO4J_AUTH=neo4j/passwordds
+    volumes:
+      - neo4j_data:/data
+    networks:
+      - network
+
+volumes:
+  mongo_store:
+  mongo_express_data:
+  cass_store:
+  cosnul_store:
+  redis_data:
+  hadoop_namenode:
+  hadoop_datanode1:
+  hadoop_datanode2:
+  hadoop_datanode3:
+  auth_log:
+  prof_log:
+  acco_log:
+  res_log:
+  neo4j_data:
+
+networks:
+  network:
+    driver: bridge

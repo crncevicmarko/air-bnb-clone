@@ -1,0 +1,29 @@
+<div class="container mt-5">
+  <h2>Enter email for password recovery</h2>
+  <form [formGroup]="verifyEmail" (ngSubmit)="sendVerificationCode()">
+    <div class="form-group">
+      <label for="code">Verifying Code:</label>
+      <input
+        style="width: 300px; text-align: left"
+        type="text"
+        id="code"
+        class="form-control"
+        formControlName="code"
+      />
+      <div
+        style="color: red"
+        *ngIf="verifyEmail.get('code')?.hasError('required')"
+      >
+        Code is required.
+      </div>
+    </div>
+
+    <button
+      type="submit"
+      class="btn btn-primary"
+      [disabled]="!verifyEmail.valid"
+    >
+      Verify
+    </button>
+  </form>
+</div>

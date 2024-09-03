@@ -1,0 +1,42 @@
+<div class="container-fluid mb-3">
+  <nav class="navbar navbar-expand-lg bg-primary" data-bs-theme="dark">
+    <div class="container-fluid">
+      <a class="navbar-brand">AirBnB</a>
+      <button
+        class="navbar-toggler"
+        type="button"
+        data-bs-toggle="collapse"
+        data-bs-target="#navbarNavAltMarkup"
+        aria-controls="navbarNavAltMarkup"
+        aria-expanded="false"
+        aria-label="Toggle navigation"
+      >
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNavAltMarkup">
+        <div class="navbar-nav">
+          <a class="nav-link" routerLink="/">Home</a>
+          <a *ngIf="isLoggedin" class="nav-link" routerLink="/profile" >Profile</a>
+          <a
+            *ngIf="isLoggedin && userRole == 'GUEST'"
+            class="nav-link"
+            routerLink="/reservations"
+            >My Reservations</a
+          >
+          <a
+            *ngIf="isLoggedin && userRole == 'HOST'"
+            class="nav-link"
+            routerLink="/accommodations/myAccommodations"
+            >My Accommodations</a>
+          <a *ngIf="!isLoggedin" class="nav-link" routerLink="/register">Register</a>
+          <a *ngIf="!isLoggedin" class="nav-link" routerLink="/login">Log in</a>
+          <a
+            *ngIf="isLoggedin && userRole == 'HOST'"
+            class="nav-link"
+            routerLink="/notifications"
+            >Notifications</a>
+        </div>
+      </div>
+    </div>
+  </nav>
+</div>

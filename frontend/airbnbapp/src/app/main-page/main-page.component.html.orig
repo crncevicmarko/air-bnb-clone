@@ -1,0 +1,127 @@
+<div class="container">
+  <button
+    *ngIf="isLoggedin && userRole === 'HOST'"
+    routerLink="/accommodations/create"
+    class="btn btn-primary mb-4"
+    id="createAccoButton"
+  >
+    Create Accommodation
+  </button>
+
+  <div class="container">
+    <form [formGroup]="searchAccoForm" (ngSubmit)="searchAcco()">
+      <div class="wrapper">
+        <p>Search Accommodations</p>
+        <div class="search-container">
+<<<<<<< Updated upstream
+          <input id="searchInput" type="text" [formControlName]="'location'" class="location" placeholder="Location">
+          <input id="searchInput" type="date" [formControlName]="'startDate'" class="date-from" placeholder="Check In">
+          <input id="searchInput" type="date" [formControlName]="'endDate'" class="date-to" placeholder="Check Out">
+          <input id="searchInput" type="text" [formControlName]="'noGuests'" class="noPeople" placeholder="Number of people">
+=======
+          <input
+            type="text"
+            [formControlName]="'location'"
+            class="location"
+            placeholder="Location"
+          />
+          <input
+            type="date"
+            [formControlName]="'startDate'"
+            class="date-from"
+            placeholder="Check In"
+          />
+          <input
+            type="date"
+            [formControlName]="'endDate'"
+            class="date-to"
+            placeholder="Check Out"
+          />
+          <input
+            type="text"
+            [formControlName]="'noGuests'"
+            class="noPeople"
+            placeholder="Number of people"
+          />
+>>>>>>> Stashed changes
+          <button type="submit" class="button">Search</button>
+          <button type="button" class="button" (click)="ngOnInit()">
+            Reset
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+<<<<<<< Updated upstream
+  <br>
+  <div class="container">
+    <form [formGroup]="filterAccoForm" (ngSubmit)="filterAcco()">
+      <div class="wrapper">
+        <p>Filter Accommodations</p>
+        <div class="search-container">
+          <input id="filterInput" type="text" [formControlName]="'priceFrom'" class="priceFrom" placeholder="Price From">
+          <input id="filterInput" type="text" [formControlName]="'priceTo'" class="priceTo" placeholder="Price To">
+
+          <div
+            class="form-check"
+            *ngFor="let amenity of getRange(amenityRange); let i = index"
+            >
+            <input
+              id="filterInput"
+              type="checkbox"
+              [value]="amenity"
+              (change)="onCheckChange($event)"
+            />
+            <label class="form-check-label" [for]="amenity">{{ amenity }}</label>
+          </div>
+
+          <div class="form-check">
+            <input id="filterInput" type="checkbox" [formControlName]="'isFeatured'" class="featuredHost" value="Featured Host">
+            <label class="form-check-label">Featured Host</label>
+          </div>
+          
+          <button type="submit" class="button">Filter</button>
+          <!-- <button type="button" class="button" (click)="ngOnInit()">Reset</button> -->
+        </div>
+      </div> 
+    </form>
+  </div>
+
+  <app-accommo-list [accommodations]="accommodations" class="accommodations"></app-accommo-list>
+=======
+  <div class="mt-3" *ngIf="isLoggedin && userRole === 'GUEST' && recCount > 0">
+    <h3>Recommendations:</h3>
+    <div class="row row-cols-3 g-4">
+      <div class="col" *ngFor="let recommendation of recommendedAccomo">
+        <div class="card h-100">
+          <img src="../../assets/temp.jpg" alt="" />
+          <div class="card-body">
+            <p>
+              {{
+                recommendation.location!.city +
+                  ", " +
+                  recommendation.location!.country
+              }}
+            </p>
+
+            <a
+              class="mylink stretched-link opacity-0"
+              [routerLink]="['/accommodations/info', recommendation._id]"
+            >
+              Check
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mt-3">
+    <h3>All Accomodations:</h3>
+  </div>
+  <app-accommo-list
+    [accommodations]="accommodations"
+    class="accommodations"
+  ></app-accommo-list>
+>>>>>>> Stashed changes
+</div>

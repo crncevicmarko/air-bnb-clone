@@ -1,0 +1,83 @@
+.custom-day {
+  text-align: center;
+  padding: 0.185rem 0.25rem;
+  display: inline-block;
+  height: 2rem;
+  width: 2rem;
+}
+.custom-day.focused {
+  background-color: #e6e6e6;
+}
+.custom-day.range,
+.custom-day:hover {
+  background-color: rgb(2, 117, 216);
+  color: white;
+}
+.custom-day.faded {
+  background-color: rgba(2, 117, 216, 0.5);
+}
+.custom-day.disabled {
+  color: grey;
+}
+
+form {
+  margin-top: 20px;
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+input {
+  width: auto;
+  padding: 8px;
+  margin-bottom: 16px;
+}
+
+button {
+  padding: 10px 20px;
+  color: #fff;
+  border: none;
+  cursor: pointer;
+}
+
+.container1 {
+  width: 1300px;
+  height: 500px;
+  position: relative;
+  overflow: hidden;
+  margin: 0 auto;
+}
+
+.image-container {
+  display: flex;
+  height: 100%;
+}
+
+.big-image {
+  flex: 1;
+  width: 50%;
+  height: 100%;
+  border: 1px solid #ddd;
+}
+
+.big-image img {
+  width: 100%;
+  height: 100%;
+}
+
+.small-images {
+  width: 50%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.small-image {
+  width: 50%;
+  height: 50%;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  box-sizing: border-box;
+}

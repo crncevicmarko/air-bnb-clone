@@ -1,0 +1,99 @@
+.mylink {
+  height: 0;
+  width: 0;
+  overflow: hidden;
+  display: block;
+}
+
+#Search {
+  font-family: 'Arial', sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 200vh;
+}
+
+
+.container {
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+#createAccoButton{
+  margin: 20px;
+  
+}
+
+.accommodations {
+  padding: 20px;
+  margin: 20px;
+}
+
+form {
+  padding: 20px;
+}
+
+.wrapper {
+  text-align: center;
+}
+
+p {
+  font-size: 18px;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.featuredHost {
+  border: 1px solid gray;
+}
+
+.search-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+}
+
+.form-check {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-check-input {
+  margin-bottom: 5px; /* Adjust margin between checkbox and label */
+}
+
+#searchInput {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 200px;
+  box-sizing: border-box;
+}
+
+#filterInput {
+  padding: 5px;
+  border: 1px solid #ccc;
+  border-radius: 1px;
+  /* width: 200px; */
+  box-sizing: border-box;
+}
+
+.button {
+  background-color: #4CAF50;
+  color: #fff;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+.button:hover {
+  background-color: #45a049;
+}

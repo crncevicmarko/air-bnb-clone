@@ -1,0 +1,28 @@
+.forms-container {
+  display: flex;
+  justify-content: space-between;
+}
+
+.user-profile-form,
+.reset-password-form {
+  width: 50%; /* Adjust as needed */
+}
+
+.input-group {
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-container {
+  margin: 0 5px; /* Adjust margin as needed */
+  display: flex;
+  align-items: center;
+}
+
+.checkbox-container input {
+  margin: 0;
+}
+
+.checkbox-container label {
+  display: none; /* Hide the label text */
+}

@@ -1,0 +1,262 @@
+<div class="container mt-3">
+  <button class="btn btn-primary" (click)="logout()">Logout</button>
+  <button
+    style="margin-left: 10px"
+    class="btn btn-danger ml-2"
+    (click)="deleteUser()"
+  >
+    Delete Profile
+  </button>
+</div>
+<div class="container mt-3">
+  <div class="forms-container">
+    <div class="user-profile-form">
+      <h2>User Profile</h2>
+      <h2 *ngIf="isHostFeatured">Prominent Host</h2>
+      <form (ngSubmit)="submitForm()" #userProfileForm="ngForm">
+        <div class="form-group col-md-8">
+          <label for="username">Username:</label>
+          <input
+            type="text"
+            id="username"
+            name="username"
+            [(ngModel)]="user.username"
+            class="form-control"
+            required
+            disabled="true"
+          />
+        </div>
+
+        <div class="form-group col-md-8">
+          <label for="email">Email:</label>
+          <input
+            type="email"
+            id="email"
+            name="email"
+            [(ngModel)]="user.email"
+            class="form-control"
+            required
+          />
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-md-8">
+            <label for="firstName">First Name:</label>
+            <input
+              type="text"
+              id="firstName"
+              name="firstName"
+              [(ngModel)]="user.firstName"
+              class="form-control"
+              required
+            />
+          </div>
+
+          <div class="form-group col-md-8">
+            <label for="lastName">Last Name:</label>
+            <input
+              type="text"
+              id="lastName"
+              name="lastName"
+              [(ngModel)]="user.lastName"
+              class="form-control"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-md-8">
+            <label for="city">City:</label>
+            <input
+              type="text"
+              id="city"
+              name="city"
+              [(ngModel)]="user.city"
+              class="form-control"
+              required
+            />
+          </div>
+
+          <div class="form-group col-md-8">
+            <label for="country">Country:</label>
+            <input
+              type="text"
+              id="country"
+              name="country"
+              [(ngModel)]="user.country"
+              class="form-control"
+              required
+            />
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group col-md-8">
+            <label for="streetName">Street Name:</label>
+            <input
+              type="text"
+              id="streetName"
+              name="streetName"
+              [(ngModel)]="user.streetName"
+              class="form-control"
+              required
+            />
+          </div>
+
+          <div class="form-group col-md-8">
+            <label for="streetNumber">Street Number:</label>
+            <input
+              type="text"
+              id="streetNumber"
+              name="streetNumber"
+              [(ngModel)]="user.streetNumber"
+              class="form-control"
+              required
+            />
+          </div>
+        </div>
+
+        <br />
+
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="userProfileForm.invalid"
+        >
+          Update
+        </button>
+      </form>
+    </div>
+
+    <div class="reset-password-form">
+      <!-- <div class="container mt-5"> -->
+      <h2>Change Password</h2>
+      <form [formGroup]="resetForm" (ngSubmit)="changePassword()">
+        <div class="form-group col-md-8">
+          <label for="oldPassword">Old Password:</label>
+          <div class="input-group">
+            <input
+              [type]="showOldPassword ? 'text' : 'password'"
+              id="oldPassword"
+              formControlName="oldPassword"
+              class="form-control"
+            />
+            <div class="input-group-append">
+              <div class="checkbox-container">
+                <input
+                  type="checkbox"
+                  id="showOldPasswordCheckbox"
+                  (change)="togglePasswordVisibility(1)"
+                />
+                <label for="showOldPasswordCheckbox"></label>
+              </div>
+            </div>
+          </div>
+          <div
+            style="color: red"
+            *ngIf="resetForm.get('oldPassword')?.hasError('required')"
+          >
+            Password is required.
+          </div>
+        </div>
+
+        <div class="form-group col-md-8">
+          <label for="newPassword">New Password:</label>
+          <div class="input-group">
+            <input
+              [type]="showNewPassword ? 'text' : 'password'"
+              id="newPassword"
+              formControlName="newPassword"
+              class="form-control"
+            />
+            <div class="input-group-append">
+              <div class="checkbox-container">
+                <input
+                  type="checkbox"
+                  id="showNewPasswordCheckbox"
+                  (change)="togglePasswordVisibility(2)"
+                />
+                <label for="showNewPasswordCheckbox"></label>
+              </div>
+            </div>
+          </div>
+          <div
+            style="color: red"
+            *ngIf="resetForm.get('newPassword')?.hasError('required')"
+          >
+            Password is required.
+          </div>
+          <div
+            style="color: red"
+            *ngIf="resetForm.get('newPassword')?.hasError('minlength')"
+          >
+            Password must be at least 8 characters long.
+          </div>
+          <div
+            style="color: red"
+            *ngIf="resetForm.get('newPassword')?.hasError('invalidPassword')"
+          >
+            Password must contain at least 8 characters, one uppercase letter,
+            one number, and one special character.
+          </div>
+        </div>
+
+        <div class="form-group col-md-8">
+          <label for="confirmPassword">Confirm Password:</label>
+          <div class="input-group">
+            <input
+              [type]="showConfirmPassword ? 'text' : 'password'"
+              id="oldPassword"
+              formControlName="confirmPassword"
+              class="form-control"
+            />
+            <div class="input-group-append">
+              <div class="checkbox-container">
+                <input
+                  type="checkbox"
+                  id="showConfirmPasswordCheckbox"
+                  (change)="togglePasswordVisibility(3)"
+                />
+                <label for="showNewPasswordCheckbox"></label>
+              </div>
+            </div>
+          </div>
+          <div style="color: red" *ngIf="resetForm.hasError('notSame')">
+            Passwords do not match.
+          </div>
+        </div>
+
+        <br />
+
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="!resetForm.valid"
+        >
+          Change
+        </button>
+      </form>
+      <!-- </div> -->
+    </div>
+  </div>
+</div>
+<!-- <div class="container mt-4">
+  <h2>Host Grades Table</h2>
+  <table class="table">
+    <thead>
+      <tr>
+        <th scope="col">User ID</th>
+        <th scope="col">Creation Date</th>
+        <th scope="col">Grade</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr *ngFor="let hostGrade of grades">
+        <td>{{ hostGrade.userId }}</td>
+        <td>{{ hostGrade.createdAt }}</td>
+        <td>{{ hostGrade.grade }}</td>
+      </tr>
+    </tbody>
+  </table>
+</div> -->

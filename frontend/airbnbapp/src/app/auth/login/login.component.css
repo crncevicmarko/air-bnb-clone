@@ -1,0 +1,41 @@
+/* Basic CSS for styling */
+.container {
+    text-align: center;
+  }
+  
+  .login-form {
+    width: 25%;
+    border: 1px solid #ccc;
+    padding: 20px;
+    border-radius: 5px;
+    background-color: #f8f9fa;
+  }
+  
+  legend {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+  
+  .form-group {
+    margin-bottom: 15px;
+  }
+  
+  .btn-primary {
+    width: 100%;
+  }
+  
+  .links {
+    margin-top: 20px;
+  }
+  
+  .link {
+    text-decoration: none;
+    color: #007bff;
+  }
+  
+  .divider {
+    margin: 0 10px;
+    color: #6c757d;
+  }
+  
